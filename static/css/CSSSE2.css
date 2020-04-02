@@ -1,0 +1,159 @@
+html{
+    font-family:sans-serif;
+    text-align: center;
+}
+
+body{
+    background-image: url("bgpic.jpg");
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-size: 100%;
+}
+
+#navi{
+    display: inline-block;
+    margin: 0px;
+    width: 0%;
+    font-size: 18px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    color:aliceblue;
+}
+
+#bar{
+    list-style-type:none;
+    margin:auto;
+    overflow:hidden;
+    background-color:cadetblue;
+}
+
+#bar a:link, #bar a:visited{
+    display:block;
+    color:rgba(255,255,255,1);
+    text-align:center;
+    padding:16px;
+    text-decoration:none;
+}
+
+#bar a:hover{
+    background-color:rgba(214,200,75,0.8);
+}
+
+@-webkit-keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+
+#square{
+    width:1000px;
+    height: auto;
+    margin:110px 10px;
+    padding: 30px;
+    overflow: hidden;
+    display: inline-block;
+    background-color:rgba(250,250,250,0.7);
+    -webkit-animation-name: fadein;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: 1;
+}
+
+#title{
+    font-size: 20px;
+    color:rgba(255,255,255,1);
+    text-shadow: 1px 2px cadetblue;
+}
+
+#dublinbikelogo{
+    width: 100px;
+    height: 60px;
+    top: 0;
+    z-index: 9999;
+    position: fixed;
+    left: 45%;
+}
+
+.dropdown{
+
+    background-color:cadetblue;
+    text-align:left;
+    padding:20px;
+    display:inline-block;
+    cursor:pointer;
+    position:fixed;
+}
+.di{
+    display:none;
+    position:absolute;
+    top:61px;
+    left:0;
+}
+.di ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.di ul li{
+    min-width:104px;
+    padding:10px 15px;
+
+}
+.dropdown:hover{
+    background-color:cornflowerblue;
+}
+.dropdown:hover .di{
+    display:block;
+
+}
+.di ul li:hover{
+    background-color: #f1f1f1
+}
+
+a:link{
+    color:darkcyan;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:visited {
+    color:brown;
+    background-color: transparent;
+    text-decoration: none;
+}
+
+a:hover {
+    color:cornflowerblue ;
+    background-color: transparent;
+    text-decoration:none;
+}
+
+ul{
+    text-align: left;
+    color: rgba(0,0,0,0.7)
+}
+
+mark{
+    background-color: cadetblue;
+    color:white;
+}
+
+footer{
+    color: white
+}
+
+#map {
+    top:20px;
+    position:relative;
+    margin:auto;
+    height:600px;
+    width:900px;
+}
