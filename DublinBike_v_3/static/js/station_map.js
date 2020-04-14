@@ -1,13 +1,6 @@
-function show(){
-    var dt = new Date();
-    document.getElementById('datetime').innerHTML = dt.toLocaleString();
-    alert('js');
-    alert(document.getElementById('datetime'));
-}
 var map;
 function initMap() {
-    alert(lat0)
-    let option = {center: { lat: lat0, lng: lng0 }, zoom: 13.5};
+    let option = {center: { lat: lat0-0.002, lng: lng0 }, zoom: 13.5};
     map = new google.maps.Map(document.getElementById('map'), option);
     }
 function addmarker(props) {
@@ -32,8 +25,8 @@ function addmarker(props) {
         marker.addListener("mouseout", function () {
             infowindow.close(map, marker);
         })
-        marker.addListener('click', function () {
-            $('#location').val(props.name);
+        marker.addListener('click', function(){
+            $('#location1').val(props.name);
             singleshow();
         })
     }
@@ -50,9 +43,11 @@ $.ajax({
                     iconImage: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     content: data[i].info,
                     map:map,
-                    name:data[i].name
+                    name:data[i].name,
+                    lastupdate:data[i].lastupdate,
                 }
             }
+            filldata(props_list[0]);
             for (var i=0; i<props_list.length; i++){
                 addmarker(props_list[i]);
             }
@@ -60,13 +55,13 @@ $.ajax({
     })
 
 function singleshow(){
-    // alert('singleshow')
-    var selected_value = $("#location").val();
+    var selected_value = $("#location1").val();
     // var selected_value = $("#location option:selected");
-    var data = {selected_value:JSON.stringify(selected_value)};
+    var data = {selected_value:selected_value};
     if(selected_value === "ALL"){
        $.ajax({
         url: "http://127.0.0.1:5000/add_markers",
+        data: data,
         type: 'GET',
         dataType: "json",
         success: function (data) {
@@ -81,10 +76,15 @@ function singleshow(){
                     map:map3,
                     name:data[i].name
                 }
-            }
+            };
             for (var i=0; i<props_list.length; i++){
                 addmarker(props_list[i]);
-            }
+            };
+            filldata(props_list[0]);
+            // $('#location1').val(selected_value);
+        },
+        error: function (data) {
+            alert(data);
         }
     })
     }
@@ -92,7 +92,7 @@ function singleshow(){
         $.ajax({
             url: "http://127.0.0.1:5000/singleshow",
             data: data,
-            type: 'POST',
+            type: 'GET',
             dataType: "json",
             success: function (data) {
                 let option = {center: {lat: data.lat0, lng: data.lng0}, zoom: 14};
@@ -102,11 +102,67 @@ function singleshow(){
                     iconImage: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
                     content: data.all_info,
                     map: map2,
-                    name: selected_value,
+                    name:data.ava_data.name
                 };
+                nums = {
+                    name: selected_value,
+                    bikes:data.ava_data.bikes,
+                    stands:data.ava_data.stands,
+                    status:data.ava_data.status,
+                    lastupdate:data.lastupdate,
+                };
+                // $('#location1').val(selected_value);
                 addmarker(props);
+                filldata(nums);
+            },
+            error: function (data) {
+                alert('singleshowerror');
             }
         })
     }
     // $("#location option[value='"+selected_value+"']").attr("selected", true);
+}
+
+function getweather(){
+    var selected_sta = $("#location1").val();
+    // var selected_value = $("#location option:selected");
+    var val = {selected_sta:selected_sta};
+    var D = {};
+    $.ajax({
+        url: "http://127.0.0.1:5000/getweather",
+        data: val,
+        type: "GET",
+        dataType: "json",
+        async : false,
+        success:function(data){
+            D = {
+                temp: data.temp,
+                main: data.main,
+                wind:data.wind,
+            };
+        },
+        error:function () {
+            alert("error");
+        }
+    });
+    return D;
+}
+
+function filldata(station){
+    var weather = {};
+    weather = getweather();
+    let name = $("#location1").val();
+    if (station.lastupdate){
+        document.getElementById('last_update').innerHTML = station.lastupdate;
+    }
+    if (name == 'ALL') {
+        document.getElementById('avaliable_stands').innerHTML = "-";
+        document.getElementById('avaliable_bikes').innerHTML = "-";
+        document.getElementById('status').innerHTML = "-";
+    } else {
+        document.getElementById('avaliable_stands').innerHTML = station.stands;
+        document.getElementById('avaliable_bikes').innerHTML = station.bikes;
+        document.getElementById('status').innerHTML = station.status;
+    };
+    document.getElementById('weather').innerHTML = weather.main + ", " + weather.temp + ", wind:" + weather.wind;
 }

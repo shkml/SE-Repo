@@ -1,43 +1,49 @@
 <! DOCTYPE HTML>
 <html>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/CSSSE2.css') }}"/>
+<!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/CSSSE2.css') }}"/>-->
 <script src="/static/js/jquery-3.4.0.min.js"></script>
 <script src="/static/js/station_map.js"></script>
 <script type="text/javascript">
-    var lat0 = {{lat0}}
-    var lng0 = {{lng0}}
+    var lat0 = {{lat0}};
+    var lng0 = {{lng0}};
+
+    // var dt = new Date();
+    // alert(dt.toLocaleString())
+    // // document.getElementById("datetime").innerHTML = "1234";//dt.toLocaleString();
+    // document.getElementById("datetime").innerHTML = "qwe";
+    // alert(document.getElementById("datetime").innerHTML);
 </script>
 <head>
     <title>Dublin Bike</title>
 </head>
 
 <body>
-    <img id="dublinbikelogo" src="/static/bikelogo.png" alt="Logo of Dublin Bike">
+<button id="datetime" onclick="show()">123</button>
+<!--<img id="dublinbikelogo" src="/static/bikelogo.png" alt="Logo of Dublin Bike">-->
 
-    <div id="square">
-        <div id="title">
-            <p>Dublin Bike Map</p>
-        </div>
+<!--    <div id="square">-->
+<!--        <div id="title">-->
+<!--            <p>Dublin Bike Map</p>-->
+<!--        </div>-->
 
-        <select id="location" required onchange="singleshow()">
-            <option value="ALL" selected>ALL STATIONS</option>
-            {% for name in station_name %}
-            <option value="{{name}}">{{name}}</option>
-            {% endfor %}
-        </select>
+<!--        <select id="location" required onchange="singleshow()">-->
+<!--            <option value="ALL" selected>ALL STATIONS</option>-->
+<!--            {% for name in station_name %}-->
+<!--            <option value="{{name}}">{{name}}</option>-->
+<!--            {% endfor %}-->
+<!--        </select>-->
 
-        <div id="map"></div>
+<!--        <div id="map"></div>-->
 
-    <!-- generate the map -->
-        <script src="station_map.js"></script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_Bqco2DvRVp55QdFyANIiDRSKS8IE8p8&callback=initMap&callback=initMap"
-        async defer></script>
-    <!--  map generated   -->
-
-    </div>
-    <footer>
-        Our names, comments, references?
-    </footer>
+<!--    &lt;!&ndash; generate the map &ndash;&gt;-->
+<!--        <script src="station_map.js"></script>-->
+<!--        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_Bqco2DvRVp55QdFyANIiDRSKS8IE8p8&callback=initMap&callback=initMap"-->
+<!--        async defer></script>-->
+<!--    &lt;!&ndash;  map generated   &ndash;&gt;-->
+<!--    </div>-->
+<!--    <footer>-->
+<!--        Our names, comments, references?-->
+<!--    </footer>-->
 </body>
 </html>
