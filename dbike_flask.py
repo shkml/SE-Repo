@@ -61,7 +61,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
 @app.route('/')
 def index():
-    station_dict = open_station_json("static/dublin.json")
+    station_dict = open_station_json("./static/dublin.json")
     station_coord = station_dict["station_coord"]
     station_name = station_dict["station_name"]
 
@@ -196,7 +196,7 @@ def getweather():
 @app.route('/graphdata', methods=['GET', 'POST'])
 def graphdata():
     try:
-        bd_json = open('static/processedBikeData.json')
+        bd_json = open('./static/processedBikeData.json')
     except IOError:
         print("file dublin.json not found")
     else:
