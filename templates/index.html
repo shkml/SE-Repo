@@ -17,25 +17,20 @@
   <link rel="stylesheet" href="static/css/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="static/images/favicon.png" />
+  <script src="../static/js/echarts.min.js"></script>
+  <script src="../static/js/echarts.all.js"></script>
   <script src="/static/js/jquery-3.4.0.min.js"></script>
   <script src="/static/js/station_map.js"></script>
   <script type="text/javascript">
       var lat0 = {{ lat0 }};
       var lng0 = {{ lng0 }};
   </script>
-  <script type="text/javascript"t>
-      window.onload = setInterval('showtime()',1000);
-      function showtime(){
-          var dt = new Date();
-           document.getElementById("datetime").innerHTML = dt.toLocaleString('england',{ hour12: false });
-  }
-  </script>
 </head>
 <body>
   <div class="container-scroller">
     <nav class="navbar  p-0 fixed-top d-flex flex-row" style="background: #ffffff">
       <div class="navbar-brand-wrapper d-flex justify-content-center">
-        <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">  
+        <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
           <a class="navbar-brand brand-logo" href="http://www.dublinbikes.ie" target="_blank"><img src="static/images/bikelogo.png" alt="logo"/></a>
           <a class="navbar-brand brand-logo-mini" href="javascript:location.reload();"><img src="static/images/logo-mini.svg" alt="logo"/></a>
           <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -93,19 +88,19 @@
     </div>
     <div class="tab-pane fade" id="sales" role="tabpanel" aria-labelledby="sales-tab" style="background: #ffffff; height: 60px;">
       <div class="d-flex flex-wrap justify-content-xl-between">
-        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
-          <i class="mdi mdi-download mr-3 icon-lg text-warning"></i>
-          <div class="d-flex flex-column justify-content-around" style="align-items: center">
-            <small class="mb-1 text-muted">Station Name</small>
-            <h5 class="mr-2 mb-0">Cork</h5>
-          </div>
-        </div>
+<!--        <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">-->
+<!--          <i class="mdi mdi-download mr-3 icon-lg text-warning"></i>-->
+<!--          <div class="d-flex flex-column justify-content-around" style="align-items: center">-->
+<!--            <small class="mb-1 text-muted">Station Name</small>-->
+<!--            <h5 class="mr-2 mb-0">Cork</h5>-->
+<!--          </div>-->
+<!--        </div>-->
         <div class="d-none d-xl-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
           <i class="mdi mdi-calendar-heart icon-lg mr-3 text-primary"></i>
           <div class="d-flex flex-column justify-content-around">
-            <small class="mb-1 text-muted">Last Update</small>
+            <small class="mb-1 text-muted">Prediction Time</small>
             <div class="dropdown">
-                <h5 class="mb-0 d-inline-block">26 Jul 2018 12pm</h5>
+                <h5 class="mb-0 d-inline-block" id="pretime">-</h5>
             </div>
           </div>
         </div>
@@ -113,28 +108,28 @@
           <i class="mdi mdi-currency-usd mr-3 icon-lg text-danger"></i>
           <div class="d-flex flex-column justify-content-around" style="align-items: center">
             <small class="mb-1 text-muted">Available Stands</small>
-            <h5 class="mr-2 mb-0">5</h5>
+            <h5 class="mr-2 mb-0" id="prestands">-</h5>
           </div>
         </div>
         <div class="d-flex border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
           <i class="mdi mdi-eye mr-3 icon-lg text-success"></i>
           <div class="d-flex flex-column justify-content-around" style="align-items: center">
             <small class="mb-1 text-muted">Available Bikes</small>
-            <h5 class="mr-2 mb-0">9</h5>
+            <h5 class="mr-2 mb-0" id="prebikes">-</h5>
           </div>
         </div>
         <div class="d-flex py-3 border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
           <i class="mdi mdi-flag mr-3 icon-lg text-danger"></i>
           <div class="d-flex flex-column justify-content-around" style="align-items: center">
             <small class="mb-1 text-muted">Station Status</small>
-            <h5 class="mr-2 mb-0">OPEN</h5>
+            <h5 class="mr-2 mb-0" id="prestatus">-</h5>
           </div>
         </div>
         <div class="d-flex py-3 border-md-right flex-grow-1 align-items-center justify-content-center p-3 item">
           <i class="mdi mdi-weather-sunny mr-3 icon-lg text-danger"></i>
           <div class="d-flex flex-column justify-content-around" style="align-items: center">
             <small class="mb-1 text-muted">Weather Status</small>
-            <h5 class="mr-2 mb-0">Sunny</h5>
+            <h5 class="mr-2 mb-0" id="preweather">-</h5>
           </div>
         </div>
       </div>
@@ -157,7 +152,7 @@
 <!--              <i class="mdi mdi-circle-outline menu-icon"></i>-->
               <span class="menu-title" style="font-size: 10px;">
                 Station:
-                <select class="menu-title" id="location1" required onchange="singleshow()" style="font-size: 6px;width: 180px;">
+                <select class="menu-title" id="location1" required onchange="{showprediction();singleshow();getgraphdata();adaptgraph()}" style="font-size: 6px;width: 180px;">
                     <option value="ALL" selected>ALL STATIONS</option>
                     {% for name in station_name %}
                     <option value="{{name}}">{{name}}</option>
@@ -171,11 +166,18 @@
               <i class="mdi mdi-timetable icon-lg mr-3 text-primary"></i>
               <span class="menu-title">
                 <h5 id="datetime"></h5>
-<!--                <select><option>26</option></select>-->
-<!--                <select><option>Jan</option></select>-->
-<!--                <select><option>2020</option></select>-->
-<!--                <select><option>16pm</option></select>-->
               </span>
+
+            </div>
+          </li>
+          <li class="nav-item">
+            <div class="nav-link">
+                <span class="menu-title">
+                    <h6>Use DublinBike at <br><br>
+                        <select id="selecttime" onchange="getgraphdata();showprediction();adaptgraph()">
+                    </select>
+                    </h6>
+                </span>
             </div>
           </li>
           <li class="nav-item">
@@ -215,7 +217,7 @@
                       <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Present Situation</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false">Prediction at Selected Time</a>
+                      <a class="nav-link" id="sales-tab" data-toggle="tab" href="#sales" role="tab" aria-controls="sales" aria-selected="false" onclick="showprediction()">Prediction at Selected Time</a>
                     </li>
                   </ul>
                 </div>
@@ -232,45 +234,41 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-7 grid-margin stretch-card">
+          <div class="row" id="row">
+            <div class="col-md-5 grid-margin stretch-card" style="padding: 0 0 0;">
               <div class="card">
                 <div class="card-body">
-                  <p class="card-title">Figure 1</p>
-                  <p class="mb-4">To start a blog, think of a topic about and first brainstorm party is ways to write details</p>
-                  <div id="cash-deposits-chart-legend" class="d-flex justify-content-center pt-3"></div>
-                  <canvas id="cash-deposits-chart"></canvas>
+                  <h5 class="mb-4" id="h51">The usage situation in each weekday according to the historical data.</h5>
+                  <div id="figure1" style="width: 400px; height: 400px;"></div>
                 </div>
               </div>
             </div>
-            <div class="col-md-5 grid-margin stretch-card">
+            <div class="col-md-7 grid-margin stretch-card" style="padding: 0 0 0">
               <div class="card">
                 <div class="card-body">
-                  <p class="card-title">Figure 2</p>
-                  <h1>$ 28835</h1>
-                  <h4>Gross sales over the years</h4>
-                  <p class="text-muted">Today, many people rely on computers to do homework, work, and create or store useful information. Therefore, it is important </p>
-                  <div id="total-sales-chart-legend"></div>                  
+                  <h5 class="mb-4" id="h52">The usage situation along the daily time in a particular day according to the historical data.</h5>
+<!--                  <div id="total-sales-chart-legend"></div>-->
+<!--                    <canvas id="total-sales-chart"></canvas>-->
+                  <div id="figure2" style="width: 600px; height: 400px;"></div>
                 </div>
-                <canvas id="total-sales-chart"></canvas>
               </div>
             </div>
           </div>
-        </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
-<!--        <footer class="footer">-->
-<!--          <div class="d-sm-flex justify-content-center justify-content-sm-between">-->
-<!--            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright &copy; 2019.Urbanui All rights reserved.More Templates <a href="static/http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="static/http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></span>-->
-<!--            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"></span>-->
-<!--          </div>-->
-<!--        </footer>-->
+        <footer class="footer"style="padding: 12px 12px">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright &copy; 2020.Group SE26. COMP30830. All rights reserved.More Templates </span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"></span>
+          </div>
+        </footer>
         <!-- partial -->
       </div>
       <!-- main-panel ends -->
       </div>
     <!-- page-body-wrapper ends -->
     </div>
+
   <!-- container-scroller -->
 
   <!-- plugins:js -->
@@ -292,6 +290,38 @@
   <script src="static/js/jquery.dataTables.js"></script>
   <script src="static/js/dataTables.bootstrap4.js"></script>
   <!-- End custom js for this page-->
+<script type="text/javascript"t>
+      window.onload = function (){loadtime();adaptgraph()}//setInterval('showtime()',1000);
+      function loadtime() {
+          setInterval('showtime()',1000);
+          var stime = new Date();
+          var seltime = document.getElementById("selecttime");
+          for (let i=0; i<=24; i++){
+              // let time = new Date();
+              var time = new Date(stime.getTime()+1000*60*60*(1+i));
+              var showtime = (time.getFullYear()+'/' + parseInt(time.getMonth()+1)+ '/' + time.getDate() + " "+ time.getHours() + ':00:00' );
+              seltime.options.add(new Option(showtime,showtime));
+              //stime.toLocaleString('england',{ hour12: false }),stime.toLocaleString('england',{ hour12: false })));
+          }
+      }
+      function showtime(){
+          // = dt.toLocaleString('england',{ hour12: false });
+          var dt = new Date();
+          dt.pro
+          document.getElementById("datetime").innerHTML = dt.toLocaleString('england',{ hour12: false });
+      }
+
+      function adaptgraph() {
+        if ($("#location1").val() == 'ALL'){
+            document.getElementById("row").style.display = "none";
+            document.getElementById("map").style.height = "1000px";
+        }
+        else{
+            document.getElementById("row").style.display = 'inherit';
+            document.getElementById("map").style.height = '550px';
+        }
+      }
+  </script>
 </body>
 
 </html>

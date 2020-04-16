@@ -28,11 +28,13 @@ function addmarker(props) {
         marker.addListener('click', function(){
             $('#location1').val(props.name);
             singleshow();
+            getgraphdata();
+            adaptgraph();
         })
     }
 }
 $.ajax({
-        url: "http://127.0.0.1:5000/add_markers",
+        url: "/add_markers",
         type: 'GET',
         dataType: "json",
         success: function (data) {
@@ -60,7 +62,7 @@ function singleshow(){
     var data = {selected_value:selected_value};
     if(selected_value === "ALL"){
        $.ajax({
-        url: "http://127.0.0.1:5000/add_markers",
+        url: "/add_markers",
         data: data,
         type: 'GET',
         dataType: "json",
@@ -90,7 +92,7 @@ function singleshow(){
     }
     else {
         $.ajax({
-            url: "http://127.0.0.1:5000/singleshow",
+            url: "/singleshow",
             data: data,
             type: 'GET',
             dataType: "json",
@@ -120,7 +122,7 @@ function singleshow(){
             }
         })
     }
-    // $("#location option[value='"+selected_value+"']").attr("selected", true);
+    // adaptgraph();
 }
 
 function getweather(){
@@ -129,7 +131,7 @@ function getweather(){
     var val = {selected_sta:selected_sta};
     var D = {};
     $.ajax({
-        url: "http://127.0.0.1:5000/getweather",
+        url: "/getweather",
         data: val,
         type: "GET",
         dataType: "json",
@@ -164,5 +166,42 @@ function filldata(station){
         document.getElementById('avaliable_bikes').innerHTML = station.bikes;
         document.getElementById('status').innerHTML = station.status;
     };
-    document.getElementById('weather').innerHTML = weather.main + ", " + weather.temp + ", wind:" + weather.wind;
+    document.getElementById('weather').innerHTML = weather.main;// + ", " + weather.temp + ", wind:" + weather.wind;
+}
+
+
+function showprediction(){
+    var staname = $("#location1").val();
+    if (staname == 'ALL'){
+        alert('No prediction for all stations together!');
+        document.getElementById('pretime').innerHTML = '-';
+        document.getElementById('prebikes').innerHTML = '-';
+        document.getElementById("prestands").innerHTML = '-';
+        document.getElementById("prestatus").innerHTML = '-';
+        document.getElementById("preweather").innerHTML = '-';
+    }
+    else {
+        var pt = $("#selecttime").val();
+        var T = new Date(pt).getTime();
+        var data = {
+            staname: staname,
+            time: T
+        }
+        $.ajax({
+            url: '/showprediction',
+            data: data,
+            type: 'GET',
+            dataType: 'json',
+            success: function (result) {
+                document.getElementById('pretime').innerHTML = pt;
+                document.getElementById('prebikes').innerHTML = result.avabikes;
+                document.getElementById("prestands").innerHTML = result.avastands;
+                document.getElementById("prestatus").innerHTML = result.status;
+                document.getElementById("preweather").innerHTML = result.weather;
+            },
+            error: function () {
+                alert('prediction data missed')
+            }
+        })
+    }
 }

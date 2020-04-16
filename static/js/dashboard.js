@@ -1,247 +1,238 @@
-(function($) {
-  'use strict';
-  $(function() {
-
-    if ($('#cash-deposits-chart').length) {
-      var cashDepositsCanvas = $("#cash-deposits-chart").get(0).getContext("2d");
-      var data = {
-        labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8"],
-        datasets: [
-          {
-            label: 'Returns',
-            data: [27, 35, 30, 40, 52, 48, 54, 46, 70],
-            borderColor: [
-              '#ff4747'
-            ],
-            borderWidth: 2,
-            fill: false,
-            pointBackgroundColor: "#fff"
-          },
-          {
-            label: 'Sales',
-            data: [29, 40, 37, 48, 64, 58, 70, 57, 80],
-            borderColor: [
-              '#4d83ff'
-            ],
-            borderWidth: 2,
-            fill: false,
-            pointBackgroundColor: "#fff"
-          },
-          {
-            label: 'Loss',
-            data: [90, 62, 80, 63, 72, 62, 40, 50, 38],
-            borderColor: [
-              '#ffc100'
-            ],
-            borderWidth: 2,
-            fill: false,
-            pointBackgroundColor: "#fff"
-          }
-        ]
-      };
-      var options = {
-        scales: {
-          yAxes: [{
-            display: true,
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 1,
-              color: "#e9e9e9",
-              zeroLineColor: "#e9e9e9",
+function getgraphdata() {
+    var staname = $('#location1').val();
+    if (staname == 'ALL') {adaptgraph(); return;}
+    else {
+        // adaptgraph();
+        var postdata = {selected_sta: staname};
+        $.ajax({
+            url: "/graphdata",
+            data: postdata,
+            type: "GET",
+            dataType: "json",
+            // async: false,
+            success: function (data) {
+              initData(data,"figure1");
+              // initData(data,"figure2");
+              linechart(data);
+                // linechart(data);
             },
-            ticks: {
-              min: 0,
-              max: 100,
-              stepSize: 20,
-              fontColor: "#6c7383",
-              fontSize: 16,
-              fontStyle: 300,
-              padding: 15
+            error: function () {
+                alert(" grpah error");
             }
-          }],
-          xAxes: [{
-            display: true,
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 1,
-              color: "#e9e9e9",
-            },
-            ticks : {
-              fontColor: "#6c7383",
-              fontSize: 16,
-              fontStyle: 300,
-              padding: 15
-            }
-          }]
-        },
-        legend: {
-          display: false
-        },
-        legendCallback: function(chart) {
-          var text = [];
-          text.push('<ul class="dashboard-chart-legend">');
-          for(var i=0; i < chart.data.datasets.length; i++) {
-            text.push('<li><span style="background-color: ' + chart.data.datasets[i].borderColor[0] + ' "></span>');
-            if (chart.data.datasets[i].label) {
-              text.push(chart.data.datasets[i].label);
-            }
-          }
-          text.push('</ul>');
-          return text.join("");
-        },
-        elements: {
-          point: {
-            radius: 3
-          },
-          line :{
-            tension: 0
-          }
-        },
-        stepsize: 1,
-        layout : {
-          padding : {
-            top: 0,
-            bottom : -10,
-            left : -10,
-            right: 0
-          }
-        }
-      };
-      var cashDeposits = new Chart(cashDepositsCanvas, {
-        type: 'line',
-        data: data,
-        options: options
-      });
-      document.getElementById('cash-deposits-chart-legend').innerHTML = cashDeposits.generateLegend();
+        })
     }
+}
 
-    if ($('#total-sales-chart').length) {
-      var totalSalesChartCanvas = $("#total-sales-chart").get(0).getContext("2d");
+function initData(gd,id) {
+  var legendData = ['bikes', 'stands'];
+  var bgColorList = ['#FBB730', '#31BDF2'];
+  var axisLabel = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var seriesValue = [];
 
-      var data = {
-        labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",'10', '11','12', '13', '14', '15','16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26','27','28','29', '30','31', '32', '33', '34', '35', '36', '37','38', '39', '40'],
-        datasets: [
-          {
-            label: '2019',
-            data: [42, 42, 30, 30, 18, 22, 16, 21, 22, 22, 22, 20, 24, 20, 18, 22, 30, 34 ,32, 33, 33, 24, 32, 34 , 30, 34, 19 ,34, 18, 10, 22, 24, 20, 22, 20, 21, 10, 10, 5, 9, 14 ],
-            borderColor: [
-              'transparent'
-            ],
-            borderWidth: 2,
-            fill: true,
-            backgroundColor: "rgba(47,91,191,0.77)"
-          },
-          {
-            label: '2018',
-            data: [35, 28, 32, 42, 44, 46, 42, 50, 48, 30, 35, 48, 42, 40, 54, 58, 56, 55, 59, 58, 57, 60, 66, 54, 38, 40, 42, 44, 42, 43, 42, 38, 43, 41, 43, 50, 58 ,58, 68, 72, 72 ],
-            borderColor: [
-              'transparent'
-            ],
-            borderWidth: 2,
-            fill: true,
-            backgroundColor: "rgba(77,131,255,0.77)"
-          },
-          {
-            label: 'Past years',
-            data: [98, 88, 92, 90, 98, 98, 90, 92, 78, 88, 84, 76, 80, 72, 74, 74, 88, 80, 72, 62, 62, 72, 72, 78, 78, 72, 75, 78, 68, 68, 60, 68, 70, 75, 70, 80, 82, 78, 78, 84, 82 ],
-            borderColor: [
-              'transparent'
-            ],
-            borderWidth: 2,
-            fill: true,
-            backgroundColor: "rgba(77,131,255,0.43)"
-          }
-        ]
-      };
-      var options = {
-        scales: {
-          yAxes: [{
-            display: false,
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 1,
-              color: "#e9e9e9",
-              zeroLineColor: "#e9e9e9",
-            },
-            ticks: {
-              display : true,
-              min: 0,
-              max: 100,
-              stepSize: 10,
-              fontColor: "#6c7383",
-              fontSize: 16,
-              fontStyle: 300,
-              padding: 15
-            }
-          }],
-          xAxes: [{
-            display: false,
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 1,
-              color: "#e9e9e9",
-            },
-            ticks : {
-              display: true,
-              fontColor: "#6c7383",
-              fontSize: 16,
-              fontStyle: 300,
-              padding: 15
-            }
-          }]
-        },
-        legend: {
-          display: false
-        },
-        legendCallback: function(chart) {
-          var text = [];
-          text.push('<ul class="dashboard-chart-legend mb-0 mt-4">');
-          for(var i=0; i < chart.data.datasets.length; i++) {
-            text.push('<li><span style="background-color: ' + chart.data.datasets[i].backgroundColor + ' "></span>');
-            if (chart.data.datasets[i].label) {
-              text.push(chart.data.datasets[i].label);
-            }
-          }
-          text.push('</ul>');
-          return text.join("");
-        },
-        elements: {
-          point: {
-            radius: 0
-          },
-          line :{
-            tension: 0
-          }
-        },
-        stepsize: 1,
-        layout : {
-          padding : {
-            top: 0,
-            bottom : 0,
-            left : 0,
-            right: 0
-          }
+  for (var i = 0; i < legendData.length; i++) {
+    var arrData = [];
+    var seriesDataVal = null;
+    for (var j = 0; j < axisLabel.length; j++) {
+      for (var k in gd) {
+        if (k == axisLabel[j]) {
+          if (i == 0) {arrData.push(gd[k].ab)}
+          else {arrData.push(gd[k].abs)}
         }
-      };
-      var totalSalesChart = new Chart(totalSalesChartCanvas, {
-        type: 'line',
-        data: data,
-        options: options
-      });
-      document.getElementById('total-sales-chart-legend').innerHTML = totalSalesChart.generateLegend();
+      }
     }
+      seriesDataVal = {
+        barWidth: 10,//bar width
+        name: legendData[i],
+        type: 'bar',
+        itemStyle: {
+          normal: {
+            show: true,//show data when hover
+            barBorderRadius: [10, 10, 10, 10],//the looks of bar
+            color: bgColorList[i]
+          }
+        },
+        label: {
+          normal: {
+            show: true, //showdata
+            position: 'top'//show data at the top.  'top/right/left/insideLeft/insideRight/insideTop/insideBottom'
+          }
+        },
+        data: arrData
+      };
+      seriesValue.push(seriesDataVal);
+    }
+    buildChart(legendData, axisLabel, seriesValue, id);
+  }
 
-    $('#recent-purchases-listing').DataTable({
-      "aLengthMenu": [
-        [5, 10, 15, -1],
-        [5, 10, 15, "All"]
-      ],
-      "iDisplayLength": 10,
-      "language": {
-        search: ""
+
+  //generate Echarts graph
+function buildChart(legendData, axisLabel, seriesValue, id) {
+    var chart = document.getElementById(id);
+    var echart = echarts.init(chart);
+    var option = {
+      title: {
+        text: "Available Bikes/Stands of "+ $('#location1').val(),//title
+        x: "center", //horizontal position of the title
+        y: "0", //
+        textStyle: {
+          fontSize: 15,
+          fontWeight: 'normal',
+          color: '#666'
+        }
       },
-      searching: false, paging: false, info: false
-    });
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'//shade, can also be 'line'
+        }
+      },
+      // toolbox: {
+      //   show: true,
+      //   feature: {
+      //     saveAsImage: {show: true}
+      //   }
+      // },
+      legend: {
+        data: legendData,
+        y: 'bottom'//
 
-  });
-})(jQuery);
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '10%',
+        top: '10%',
+        containLabel: true
+      },
+      xAxis: [{
+        min: 0,
+        type: 'category',
+        data: axisLabel
+      }],
+      yAxis: [{
+        min: 0,
+        type: 'value',
+        splitArea: {show: false}
+      }],
+      label: {
+        normal: {
+          show: true,
+          position: 'top'
+        }
+      },
+      series: seriesValue
+    };
+    echart.setOption(option);
+}
+
+function linechart(gd) {
+  var week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  var day = $("#selecttime").val();
+  var D = (new Date(day)).getDay();
+  var Day = week[D-1];
+  var nextDay = week[D];
+  var pday = {};
+  var pnday = {};
+  for( var i in gd){
+    if(Day == i){pday = gd[i]}
+    if(nextDay == i){pnday = gd[i]}
+  }
+  var xdata = [];
+  for (let i =0; i<24; i++){xdata.push(i.toString())};
+  var LC = echarts.init(document.getElementById("figure2"));
+  var lineoption = {
+    title: {
+      text: 'Avaliable Bikes/Stands - Time ('+Day+')',
+      x: "left", //horizontal position of the title
+      y: "0", //
+      textStyle: {
+        fontSize: 15,
+        fontWeight: 'normal',
+        color: '#666'
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      x: 'right',  //控制图例显示方向
+      y: '10',
+      data: ['Avaliable Bikes', 'Avaliable Stands'], //定义都有哪些图例显示
+      selected: {
+        'Avaliable Bikes': true,
+        'Avaliable Stands': true,
+      }    //设置为false的代表初始化的时候隐藏，只有点击的时候折线才出来显示
+
+    },
+    //右上角工具条
+    toolbox: {
+            show : true,
+            feature : {
+                // mark : {show: true},
+                // dataView : {show: true, readOnly: false},
+                // magicType : {show: true, type: ['line', 'bar']},
+                // restore : {show: true},
+                // saveAsImage : {show: true}
+            }
+        },
+    calculable: false,
+    xAxis: [
+      {
+        type: 'category',
+        boundaryGap: false,
+        data: function () {
+            let l = [];
+            for (i in xdata){
+              l.push(i+":00")
+            }
+            return l;
+        }(),
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        axisLabel: {
+          formatter: '{value}'
+        }
+      }
+    ],
+    series: [
+      {
+        name: 'Avaliable Bikes',
+        type: 'line',
+        data: function () {
+            let l = [];
+            for (i in xdata){
+              l.push(pday.ab_time_usage[i]);
+            }
+            return l;
+        }(),
+        markPoint: {
+          data: [
+            {type: 'max', name: '最大值'},
+            {type: 'min', name: '最小值'}
+          ]
+        }
+      },
+      {
+        name: 'Avaliable Stands',
+        type: 'line',
+        data: function () {
+            let l = [];
+            for (i in xdata){
+              l.push(pday.abs_time_usage[i]);
+            }
+            return l;
+        }(),
+        markPoint: {
+          data: [
+            {type: 'max', name: '最大值'},
+            {type: 'min', name: '最小值'}
+          ]
+        }
+      },
+    ]
+  };
+  LC.setOption(lineoption);
+}

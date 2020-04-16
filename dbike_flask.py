@@ -4,6 +4,8 @@ import requests
 import json
 from datetime import timedelta
 import time
+import pickle
+import sklearn
 
 
 # the file "./static/dublin.json" contains the static data of all bike stations in Dublin
@@ -78,11 +80,9 @@ def make_markers():
     for i in result:
         # get position
         loc = {"lat": i.get("position").get("lat"), "lng": i.get("position").get("lng")}
-        # weather_info = weather_get([loc])
-        # weather = weather_info[0]
-        # get time
+
         time_update = i.get('last_update')
-        time_update = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_update / 1000))
+        time_update = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(time_update / 1000))
 
         # integrate the information
         info = 'Name: ' + i.get('name') + '<br>' + \
@@ -105,7 +105,7 @@ def add_marker():
 
         # get time
         time_update = i.get('last_update')
-        time_update = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_update / 1000))
+        time_update = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(time_update / 1000))
 
         # integrate the information
         info = 'Name: ' + i.get('name') + '<br>' + \
@@ -135,15 +135,13 @@ def singleshow():
 
         # get position
         loc = {"lat": station.get("position").get("lat"), "lng": station.get("position").get("lng")}
-        # weather_infolist = weather_get([loc])
 
         # get time
         time_update = station.get('last_update')
-        time_update = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time_update / 1000))
+        time_update = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(time_update / 1000))
 
         # integrate the information
         name = station.get('name')
-        address = station.get('address')
         ava_stads = str(station.get('available_bike_stands'))
         ava_bikes = str(station.get('available_bikes'))
 
@@ -153,7 +151,6 @@ def singleshow():
                'Avaliable Bikes:' + str(station.get('available_bikes')) + '<br>' + \
                station.get('status') + '<br>' + time_update
         ava_data = {"name":name, "bikes":ava_bikes, "stands":ava_stads, "status":station.get('status')}
-        # weather = weather_infolist[0]
         all_info = info
         lat0 = loc['lat']
         lng0 = loc['lng']
@@ -195,6 +192,105 @@ def getweather():
     print(weather_dict)
     return jsonify(weather_dict)
 
+
+@app.route('/graphdata', methods=['GET', 'POST'])
+def graphdata():
+    try:
+        bd_json = open('static/processedBikeData.json')
+    except IOError:
+        print("file dublin.json not found")
+    else:
+        print('successfully open file dublin.json ')
+    finally:
+        gdata = json.load(bd_json)
+        bd_json.close()
+    staname = request.args.get("selected_sta")
+    GRAPHDATA = {}
+    for i in gdata:
+        if i == staname:
+            print(gdata[i])
+            GRAPHDATA = gdata[i]
+    return jsonify(GRAPHDATA)
+
+
+@app.route("/showprediction", methods=['GET', 'POST'])
+def showprediction():
+    print('enter show')
+    # get station name and selected time from UI
+    staname = request.args.get('staname')
+    Time = float(request.args.get('time'))
+    Time /= 1000
+    # staname = 'UPPER SHERRARD STREET'
+    # Time = time.time()
+    print(Time)
+
+    # get sta_num
+    WP_APIKEY = '9570260da25526e20bf66bdf7e1c25e5'
+    sta = {}
+    result = bike_data_fetch()
+    for i in result:
+        if i["name"] == staname:
+            print(i)
+            sta = i
+            stn_num = i['number']
+            status = i['status']
+            break
+    else:
+        if not sta['name']:
+            raise
+
+    # get LAT, LNG
+    loc = {"lat": sta.get("position").get("lat"), "lng": sta.get("position").get("lng")}
+    LAT = loc['lat']
+    LNG = loc['lng']
+
+    # get temp
+    weather_p = requests.get(
+        "http://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&appid={}".format(LAT, LNG, WP_APIKEY))
+    weather_result = json.loads(weather_p.text)
+    print(weather_result)
+    for i in weather_result.get('list'):
+        if i.get('dt') - Time <= 60 * 60 * 3:
+            temp = round(i.get('main').get('feels_like') - 273.15, 2)
+            weather = i.get('weather')[0].get('main')
+            print((time.localtime(i.get('dt'))).tm_hour)
+    print(temp, weather)
+
+    # get hour
+    hour = (time.localtime(Time)).tm_hour
+    print(hour)
+    # get hour list for the parameter of prediction
+    hour_l = [0, 0, 0]
+    if hour > 11:
+        hour_l[2] = 1
+        hour_l[0] = hour - 12
+    else:
+        hour_l[1] = 1
+
+    # get week list for the parameter of prediction
+    weeklist = [0 for i in range(7)]
+    w_index = (time.localtime(Time).tm_wday)
+    weeklist[w_index] = 1
+
+    # predict stands
+    with open('./static/PickelFiles/' + str(stn_num) + '_bikeStands.pkl', 'rb') as read:
+        pre_stands = pickle.load(read)
+    print([hour_l + weeklist])
+    available_stands = pre_stands.predict([hour_l + weeklist])[0]
+    available_stands = int(round(available_stands))
+    print((available_stands))
+    read.close()
+
+    # predict bikes
+    with open('./static/PickelFiles/' + str(stn_num) + '.pkl', 'rb') as read:
+        pre_bikes = pickle.load(read)
+    paralist = hour_l + [temp] + [available_stands] + weeklist
+    print(paralist)
+    available_bikes = pre_bikes.predict([paralist])[0]
+    available_bikes = int(round(available_bikes))
+    print(available_bikes)
+    result = {"avabikes": available_bikes, "avastands": available_stands, "weather": weather, 'status': status}
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run()

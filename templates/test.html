@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../static/js/echarts.min.js"></script>
+    <script src="../static/js/jquery-3.4.0.min.js"></script>
+</head>
+<body>
+<div class="zjzl" style="margin-top:80px;">
+        <div class="floatzs fixwid">
+            <div class="flot-chart-content" style="height:400px;width: 1500px" id="flot-line-chart">
+            </div>
+        </div>
+</div>
+
+<script type="text/javascript">
+    alert('123');
+    //实例化图表
+    var lineChart = echarts.init(document.getElementById("flot-line-chart"));
+    var lineoption = {
+        title : {
+            text: '充值渠道分析图'
+        },
+        tooltip : {
+            trigger: 'axis'
+        },
+        legend: {     //图例组件
+            left: 'left',  //控制图例显示方向
+            data: ['充值用户数', '管理员充值', '转账汇款', '网银支付', '平台支付', '快捷支付', '充值卡支付', '扫码支付', '手机支付', '活动奖励', '积分兑换'], //定义都有哪些图例显示
+            selected:{
+                '充值用户数':true,
+                '管理员充值':true,
+                '转账汇款':false,
+                '网银支付':false,
+                '平台支付':false,
+                '快捷支付':false,
+                '充值卡支付':false,
+                '扫码支付':false,
+                '手机支付':false,
+                '活动奖励':false,
+                '积分兑换':false,
+            }    //设置为false的代表初始化的时候隐藏，只有点击的时候折线才出来显示
+
+        },
+        //右上角工具条
+        toolbox: {
+            show : true,
+            feature : {
+                mark : {show: true},
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : false,
+        xAxis : [
+            {
+                type : 'category',
+                boundaryGap : false,
+                data : JSON.parse('["1\u6708","2\u6708","3\u6708","4\u6708","5\u6708","6\u6708","7\u6708","8\u6708","9\u6708","10\u6708","11\u6708","12\u6708"]')  //横坐标（月份）
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value',
+                axisLabel : {
+                    formatter: '{value}'
+                }
+            }
+        ],
+        series : [
+            {
+                name:'充值用户数',
+                type:'line',
+                data:JSON.parse("[983,721,871,990,1069,1209,1305,1322,1256,1154,1112,1059]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'管理员充值',
+                type:'line',
+                data:JSON.parse("[79704,44050,57647,51128,70335,75272,65962,67807,72766,75978,114158,146508]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'转账汇款',
+                type:'line',
+                data:JSON.parse("[0,0,0,0,0,1,0,0,0,0,0,0]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                },
+            },
+            {
+                name:'网银支付',
+                type:'line',
+                data:JSON.parse("[110044,78428,68683,60068,55417,56340,77075,64883,49924,57333,56631,45331]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'平台支付',
+                type:'line',
+                data:JSON.parse("[7640,3030,3290,4695,6474,11037,5639,10667,11140,11009,19363,19547]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'快捷支付',
+                type:'line',
+                data:JSON.parse("[32506,18185,21635,19973,16158,3479,0,0,0,0,0,0]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'充值卡支付',
+                type:'line',
+                data:JSON.parse("[6940,3300,4950,3550,4330,7940,4910,3820,4280,6230,1840,1770]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'扫码支付',
+                type:'line',
+                data:JSON.parse("[215634,150567,196881,240088,224504,231833,301198,278504,271896,312199,364621,314737]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'手机支付',
+                type:'line',
+                data:JSON.parse("[50398,34254,46416,66275,70673,64320,91509,140628,158441,101461,68432,43693]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'活动奖励',
+                type:'line',
+                data:JSON.parse("[0,0,0,0,0,0,0,0,0,0,0,0]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+            {
+                name:'积分兑换',
+                type:'line',
+                data:JSON.parse("[11,0,20,100,127,219,134,441,140,313,313,178]"),
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                }
+            },
+        ]
+    };
+    lineChart.setOption(lineoption);
+</script>
+</body>
+</html>
