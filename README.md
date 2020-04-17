@@ -13,8 +13,8 @@ MAIN FEATURES:
 -	Other related information for Dublin bikes
 
 MEMBERS:
-Professor: Dr. Aonghus Lawlor
-Project owner: Shreya Tadas
+- Professor: Dr. Aonghus Lawlor
+- Project owner: Shreya Tadas
 Project member and contribution (only main jobs are listed, all the group members are involved different jobs):
 -	Guosheng Li (34%): Flask app frame, web UI, weather data scraper
 -	Komal Sharma (34%): Machine learning, JavaScript, bike data scraper
