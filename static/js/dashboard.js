@@ -17,7 +17,7 @@ function getgraphdata() {
                 // linechart(data);
             },
             error: function () {
-                alert(" grpah error");
+                alert("grpah error");
             }
         })
     }
