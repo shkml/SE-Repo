@@ -16,9 +16,9 @@ MEMBERS:
 - Professor: Dr. Aonghus Lawlor
 - Project owner: Shreya Tadas
 - Project members and contribution (only main jobs are listed, all the group members were involved in different jobs):
-  -	Guosheng Li (34%): Flask app frame, web UI, weather data scraper
-  -	Komal Sharma (34%): bike data scraper, Machine learning model and Deployment
-  -	Boheng Ding (32%): web UI, JavaScript, Documentation (meeting minutes, group report etc.), 
+  -	Guosheng Li (35%): Flask app frame, web UI, weather data scraper
+  -	Komal Sharma (35%): bike data scraper, Machine learning model and Deployment
+  -	Boheng Ding (30%): web UI, JavaScript, Documentation (meeting minutes, group report etc.), 
 
 USED TOOLS:
 -	Languages - Python, Javascript, HTML and CSS
