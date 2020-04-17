@@ -1,8 +1,11 @@
 var map;
+//initialize the map
 function initMap() {
     let option = {center: { lat: lat0-0.002, lng: lng0 }, zoom: 13.5};
     map = new google.maps.Map(document.getElementById('map'), option);
     }
+
+//add markers on the map
 function addmarker(props) {
     var marker = new google.maps.Marker({
         position: props.coord,
@@ -33,6 +36,7 @@ function addmarker(props) {
         })
     }
 }
+//fetch the data from rear-end for information box.
 $.ajax({
         url: "/add_markers",
         type: 'GET',
@@ -56,6 +60,7 @@ $.ajax({
         }
     })
 
+//show the information for a specific station on the map
 function singleshow(){
     var selected_value = $("#location1").val();
     // var selected_value = $("#location option:selected");
@@ -122,9 +127,9 @@ function singleshow(){
             }
         })
     }
-    // adaptgraph();
 }
 
+// show the information about the weather.
 function getweather(){
     var selected_sta = $("#location1").val();
     // var selected_value = $("#location option:selected");
@@ -150,6 +155,7 @@ function getweather(){
     return D;
 }
 
+// fill the data on the top of the UI
 function filldata(station){
     var weather = {};
     weather = getweather();
@@ -169,7 +175,7 @@ function filldata(station){
     document.getElementById('weather').innerHTML = weather.main;// + ", " + weather.temp + ", wind:" + weather.wind;
 }
 
-
+// show prediction data on the top of the UI
 function showprediction(){
     var staname = $("#location1").val();
     if (staname == 'ALL'){

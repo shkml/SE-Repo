@@ -1,8 +1,8 @@
+// generate two graphs under the map
 function getgraphdata() {
-    var staname = $('#location1').val();
-    if (staname == 'ALL') {adaptgraph(); return;}
+    var staname = $('#location1').val();  // get selected station name
+    if (staname == 'ALL') {adaptgraph(); return;} //if no specification station selected, no graph generated
     else {
-        // adaptgraph();
         var postdata = {selected_sta: staname};
         $.ajax({
             url: "/graphdata",
@@ -12,9 +12,7 @@ function getgraphdata() {
             // async: false,
             success: function (data) {
               initData(data,"figure1");
-              // initData(data,"figure2");
               linechart(data);
-                // linechart(data);
             },
             error: function () {
                 alert("grpah error");
@@ -23,6 +21,7 @@ function getgraphdata() {
     }
 }
 
+// function used to generate the bar chart
 function initData(gd,id) {
   var legendData = ['available bikes', 'available stands'];
   var bgColorList = ['#FBB730', '#31BDF2'];
@@ -125,6 +124,8 @@ function buildChart(legendData, axisLabel, seriesValue, id) {
     echart.setOption(option);
 }
 
+
+//function used to generate the line chart
 function linechart(gd) {
   var week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   var day = $("#selecttime").val();
@@ -155,16 +156,15 @@ function linechart(gd) {
       trigger: 'axis'
     },
     legend: {
-      x: 'right',  //控制图例显示方向
+      x: 'right',
       y: '10',
-      data: ['Avaliable Bikes', 'Avaliable Stands'], //定义都有哪些图例显示
+      data: ['Avaliable Bikes', 'Avaliable Stands'],
       selected: {
         'Avaliable Bikes': true,
         'Avaliable Stands': true,
-      }    //设置为false的代表初始化的时候隐藏，只有点击的时候折线才出来显示
+      }
 
     },
-    //右上角工具条
     toolbox: {
             show : true,
             feature : {

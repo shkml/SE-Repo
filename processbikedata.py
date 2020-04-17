@@ -1,9 +1,11 @@
 import json
-import requests
-from  flask import request
-import os
 import time
+
+
 def grapfdata():
+    # define a function to process the original json data to make it simplified in order to improve reaction speed.
+
+    # load the json file
     try:
         bd_json = open('static/BikesData.json')
     except IOError:
@@ -13,13 +15,16 @@ def grapfdata():
     finally:
         gdata = json.load(bd_json)
         bd_json.close()
-    # staname = request.args.get("selected_sta")
     stations = {}
+
+    # deploy the empty dictionary 'stations', and use the station name as keys.
     for i in gdata:
         if i["name"] not in stations:
             stations[i["name"]] = {}
 
     for m in stations:
+        # ab: available bikes, abs: available bike stands
+        # ab_time_usage: available bikes at different times, abs_time_usage: available bike stands at different times.
         weekday_data = {
             "Mon": {'ab': 0, 'abs': 0, 'ab_time_usage': {}, 'abs_time_usage': {}},
             "Tue": {'ab': 0, 'abs': 0, 'ab_time_usage': {}, 'abs_time_usage': {}},
@@ -29,7 +34,7 @@ def grapfdata():
             "Sat": {'ab': 0, 'abs': 0, 'ab_time_usage': {}, 'abs_time_usage': {}},
             "Sun": {'ab': 0, 'abs': 0, 'ab_time_usage': {}, 'abs_time_usage': {}},
         }
-        count = {}
+        count = {}  # used to count how many values are added, will be used for average value calculation.
         count_h = {}
         # print(count_h)
         for j in weekday_data.keys():
@@ -42,7 +47,6 @@ def grapfdata():
             for j in range(0, 24):
                 count_h[i][str(j)] = 0
 
-        # print("m",m)
         for i in gdata:
             if i['name'] == m:
                 for j in weekday_data.keys():
@@ -55,7 +59,6 @@ def grapfdata():
                         weekday_data[j]['ab_time_usage'][t] += i['available_bikes']
                         weekday_data[j]['abs_time_usage'][t] += i['available_bike_stands']
                         count_h[j][t] += 1
-        # print(weekday_data)
         for k in weekday_data.keys():
             weekday_data[k]['ab'] = round(weekday_data[k]['ab']/count[k])
             weekday_data[k]['abs'] = round(weekday_data[k]['abs']/count[k])
@@ -63,17 +66,11 @@ def grapfdata():
                 weekday_data[k]['ab_time_usage'][hour] = round(weekday_data[k]['ab_time_usage'][hour]/count_h[k][hour])
             for hour in weekday_data[k]['abs_time_usage']:
                 weekday_data[k]['abs_time_usage'][hour] = round(weekday_data[k]['abs_time_usage'][hour]/count_h[k][hour])
-            # print(weekday_data)
         stations[m] = weekday_data
-    for i in stations:
-        print(stations[i])
-    print(len(stations))
+
     f = open("./static/processedBikeData.json", 'w')
     json.dump(stations, f)
     f.close()
 
-
-    #
-    # print(weekday_data)
 
 grapfdata()
