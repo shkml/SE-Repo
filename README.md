@@ -13,3 +13,7 @@ The html files are contained in the folder "templates", actually only index.html
 The css or js files are all contained in the 'static' folder, so when run the web application please do not chang the path, otherwise the css and js files are not accessable. Some other supporting files like pictures or icons are also stored in the 'static' folder.
 
 The requirements.txt file gives the information about the packages needed in this project. When the projected is executed in a new environment, the instruction 'pip install -r requirements.txt' should be executed in the terminal firstly to install the necssare python packages.
+
+'ML Model' folder contains the files and script during machine learning stage, the result model is also stored in the this folder.
+
+'dbv' contains the packages about the virtual environment in which this project is developed.
