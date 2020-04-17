@@ -24,7 +24,7 @@ function getgraphdata() {
 }
 
 function initData(gd,id) {
-  var legendData = ['bikes', 'stands'];
+  var legendData = ['available bikes', 'available stands'];
   var bgColorList = ['#FBB730', '#31BDF2'];
   var axisLabel = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   var seriesValue = [];
@@ -71,7 +71,7 @@ function buildChart(legendData, axisLabel, seriesValue, id) {
     var echart = echarts.init(chart);
     var option = {
       title: {
-        text: "Available Bikes/Stands of "+ $('#location1').val(),//title
+        text: $('#location1').val(),//title
         x: "center", //horizontal position of the title
         y: "0", //
         textStyle: {
