@@ -127,16 +127,14 @@ function buildChart(legendData, axisLabel, seriesValue, id) {
 
 //function used to generate the line chart
 function linechart(gd) {
-  var week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+  var week = ['Sun','Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   var day = $("#selecttime").val();
   var D = (new Date(day)).getDay();
-  var Day = week[D-1];
-  var nextDay = week[D];
+  var Day = week[D];
   var pday = {};
-  var pnday = {};
   for( var i in gd){
-    if(Day == i){pday = gd[i]}
-    if(nextDay == i){pnday = gd[i]}
+    if(Day == i){pday = gd[i];}
   }
   var xdata = [];
   for (let i =0; i<24; i++){xdata.push(i.toString())};
